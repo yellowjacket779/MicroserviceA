@@ -18,4 +18,5 @@ If you have trouble getting npm to work on your computer and you are using Windo
 2. how it will be received ` 61°F,11.2,W`
 3. Syntax for recieving `const [result] = await sock.receive();`
 ## UML Diagram
-![ULM](https://github.com/user-attachments/assets/294600e1-9aac-4924-83e6-5f3191616b49)
+
+![ULM](https://github.com/user-attachments/assets/aefcd592-d63f-4e82-9bf8-6eee092a942a)
