@@ -1,36 +1,30 @@
-//  Hello World server
 //  Binds REP socket to tcp://*:5555
-//  Expects "Hello" from client, replies with "World"
 
 const zmq = require("zeromq");
 
 async function runServer() {
   const sock = new zmq.Reply();
 
-  await sock.bind("tcp://*:5555");
+  await sock.bind("tcp://*:5555");      //sets up connection
   while(1){
-  const [msg] = await sock.receive();
+  const [msg] = await sock.receive();       //recieve messages from client
   console.log(msg.toString());
   const messageStr = msg.toString(); // Convert from Buffer to string
-  console.log("Received message:", messageStr);
+  console.log("Received message:", messageStr);   
 
-  const [lat, lon] = messageStr.split(",");
+  const [lat, lon] = messageStr.split(",");   //splits the message into usable data
   console.log("\n");
 
-  getWeatherForecast(lat, lon, sock);
+  getWeatherForecast(lat, lon, sock);   
   }
 }
 
 runServer();
 
-// function setting_up{
-
-// }
-
 async function getWeatherForecast(lat, lon, sock) {
   // const unitBtns = document.querySelectorAll('input[name="units"]');
   let unit = "fahrenheit";
-
+    //api url
   let url =
     "https://api.open-meteo.com/v1/forecast?latitude=" +
     lat +
@@ -41,12 +35,13 @@ async function getWeatherForecast(lat, lon, sock) {
   console.log("URL ", url);
   const response = await fetch(url);
   if (response.ok) {
-    const jsonResult = await response.json();
+    const jsonResult = await response.json();     //assigns the api result to a const variable 
     console.log("Full Json ::", jsonResult);
     console.log("Json Daily ::", jsonResult.current);
-    console.log("current elements::", jsonResult.current.temperature_2m);
-    const spliting = ",";
+    console.log("current elements::", jsonResult.current.temperature_2m);  
+    const spliting = ",";         
 
+    //changes the number from the api into a direction
     const direction = getDirection(jsonResult.current.wind_direction_10m);
 
     await sock.send(
@@ -60,7 +55,7 @@ async function getWeatherForecast(lat, lon, sock) {
   }
 }
 function getDirection(angle) {
-  // We divide it into 16 sections
+  // We divide the wind direction into 16 sections
   let directions = [
     "N",
     "NNE",
@@ -79,8 +74,8 @@ function getDirection(angle) {
     "NW",
     "NNW",
   ];
-  // This means, every 360 / 16 degree, there's a section change
-  // So, in our case, every 22.5 degree, there's a section change
+  //Every 360 / 16 degree, there's a section change
+  // So every 22.5 degree, there's a section change
   // In order to get the correct section, we just need to divide
   let section = parseInt(angle / 22.5 + 0.5);
   // If our result comes to be x.6, which should normally be rounded off to
@@ -90,6 +85,6 @@ function getDirection(angle) {
   // Now we know the section, just need to make sure it's under 16
   section = section % 16;
 
-  // Now we can return it
+  // Now return it
   return directions[section];
 }
